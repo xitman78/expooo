@@ -1,0 +1,36 @@
+version: '3'
+services:
+  redis:
+    image: redis:alpine
+    networks:
+      - mynet
+    command: redis-server
+  web:
+    image: mhart/alpine-node:8
+    networks:
+     - mynet
+    volumes:
+     - .:/app
+    depends_on:
+     - redis
+    environment:
+     - REDIS_HOST=redis://redis
+    command: npx nodemon /app/bin/www
+  nginx:
+    image: nginx
+    volumes:
+     - ./mysite.template:/etc/nginx/conf.d/mysite.template
+    ports:
+     - "9090:80"
+    networks:
+      - mynet
+    environment:
+     - NGINX_PORT=80
+    depends_on:
+     - web
+    command: /bin/bash -c "envsubst < /etc/nginx/conf.d/mysite.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"
+
+
+networks:
+  mynet:
+
