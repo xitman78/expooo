@@ -5,6 +5,14 @@ services:
     networks:
       - mynet
     command: redis-server
+  postgres:
+    image: postgres
+    volumes:
+     - pgdata:/var/lib/postgresql/data
+    networks:
+     - mynet
+    ports:
+     - "9999:5432"
   web:
     image: mhart/alpine-node:8
     networks:
@@ -13,8 +21,14 @@ services:
      - .:/app
     depends_on:
      - redis
+     - postgres
     environment:
      - REDIS_HOST=redis://redis
+     - PG_HOST=postgres
+     - PG_USER=postgres
+     - PG_DB=mypsqldb
+     - PG_PORT=5432
+     - PG_PASS=
     command: npx nodemon /app/bin/www
   nginx:
     image: nginx
@@ -33,4 +47,7 @@ services:
 
 networks:
   mynet:
+
+volumes:
+  pgdata:
 

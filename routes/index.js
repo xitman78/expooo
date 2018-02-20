@@ -16,7 +16,7 @@ router.get('/', function(req, res, next) {
       res.render('index', { title: 'PG Error', logs: []});
     } else {
       let emails = pgres.rows.map(it => it.email.trim());
-      console.log('psql ----', pgres);
+      // console.log('psql ----', pgres);
       res.render('index', { title: 'Express', logs: emails || []});
     }
     //client.end();
@@ -27,7 +27,7 @@ router.get('/', function(req, res, next) {
 router.post('/add', function(req, res, next) {
   console.log('req.body.email', req.body.email);
   let client = req.app.get('pgClient')
-  client.query('INSERT INTO "user" (email) VALUES($1)', [req.body.email], (err, pgres) => {
+  client.query('INSERT INTO "user" (email) VALUES($1) RETURNING *', [req.body.email], (err, pgres) => {
     console.log('INSERT CB===', err, pgres);
     res.redirect('/');
   });

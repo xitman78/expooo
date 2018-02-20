@@ -13,17 +13,19 @@ var app = express();
 if (!process.env.REDIS_HOST) process.env.REDIS_HOST = 'redis://localhost';
 // else process.env.REDIS_HOST = 'redis://' +
 
+if (!process.env.PG_HOST) process.env.PG_HOST = 'localhost';
+
 var redis = require("redis"),
     redisClient = redis.createClient(process.env.REDIS_HOST);
 
 const { Pool, Client } = require('pg');
 
 const client = new Client({
-  user: 'alexmc',
-  host: 'localhost',
-  database: 'mypsqldb',
-  password: '',
-  port: 5432,
+  user: process.env.PG_USER || 'alexmc',
+  host: process.env.PG_HOST,
+  database: process.env.PG_DB || 'mypsqldb',
+  password: process.env.PG_PASS ? process.env.PG_PASS : '',
+  port: process.env.PG_PORT || 5432,
 });
 
 client.connect();
